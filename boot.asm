@@ -7,6 +7,23 @@ setScreenRes:
 	mov al, 0x03
 	int 0x10
 
+clearDriveReg:
+	xor ax, ax                          
+	mov es, ax
+	mov ds, ax
+	mov bp, 0x8000
+	mov sp, bp
+	mov bx, diskAddr
+
+loadDrive:
+	mov ah, 2
+	mov al, 1
+	mov ch, 0
+	mov dh, 0
+	mov cl, 2
+	mov dl, [diskNum];
+	int 0x13
+
 protect_init:
 	code_seg equ code_desciptor - GDT_Start
 	data_seg equ data_descriptor - GDT_Start
@@ -43,13 +60,24 @@ GDT_Descriptor:
 
 [bits 32]
 start_protected_mode:
-	mov al, 'H'
 	mov ah, 0x0f
-	mov [0xb8000], ax
-	jmp $
+	mov bx, diskAddr
+	mov ecx, 0xb8000
+	printDrive:
+		mov al, [bx]
+		cmp al, 0
+		je $
+		mov [ecx], ax
+		inc bx
+		add ecx, 2
+		jmp printDrive
 
 diskNum: db 0
+diskAddr: dw 0x7e00
 
 exit:
+	jmp $
 	times 510-($-$$) db 0
 	dw 0xaa55
+
+db "Hello World", 0
