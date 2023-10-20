@@ -37,7 +37,7 @@ printDrive:
 	jmp printDrive
 
 diskNum: db 0
-diskAddr: db 0x7e
+diskAddr: dw 0x7e00
 
 exit:
 	jmp $
