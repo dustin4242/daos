@@ -80,4 +80,4 @@ exit:
 	times 510-($-$$) db 0
 	dw 0xaa55
 
-db "Hello World", 0
+db "Let's All Love Lain", 0
