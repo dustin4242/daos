@@ -63,14 +63,15 @@ start_protected_mode:
 	mov ah, 0x0f
 	mov bx, diskAddr
 	mov ecx, 0xb8000
-	printDrive:
-		mov al, [bx]
-		cmp al, 0
-		je $
-		mov [ecx], ax
-		inc bx
-		add ecx, 2
-		jmp printDrive
+
+printDrive:
+	mov al, [bx]
+	cmp al, 0
+	je $
+	mov [ecx], ax
+	inc bx
+	add ecx, 2
+	jmp printDrive
 
 diskNum: db 0
 diskAddr: dw 0x7e00
