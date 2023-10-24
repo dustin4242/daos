@@ -1,12 +1,14 @@
 #![no_std]
 #![no_main]
 
-mod print_string;
+mod screen;
+use screen::Screen;
 
 #[no_mangle]
 pub unsafe extern "C" fn _start() -> ! {
-    let lain = b"Let's All Love Lain";
-    print_string!(lain);
+    let mut screen = Screen::new();
+    let lain = b"Let's All Love Lain\n";
+    screen.print(lain);
     loop {}
 }
 
