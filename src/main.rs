@@ -2,8 +2,8 @@
 #![no_main]
 #![feature(abi_x86_interrupt)]
 
-mod interrupt;
-use interrupt::init_idt;
+mod interrupt_crap;
+use interrupt_crap::idt::init_idt;
 
 mod print;
 use print::print;
@@ -16,12 +16,6 @@ pub extern "C" fn _start() -> ! {
     print(lain);
     print(lain);
     print(lain);
-
-    unsafe {
-        *(0xdeadbeef as *mut u8) = 42;
-    };
-
-    x86_64::instructions::interrupts::int3();
 
     loop {}
 }
