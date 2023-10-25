@@ -9,7 +9,6 @@ pub unsafe extern "C" fn _start() -> ! {
     let mut screen = Screen::new();
     let lain = b"Let's All Love Lain\n";
     screen.print(lain);
-    screen.print(lain);
     loop {}
 }
 
