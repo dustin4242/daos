@@ -1,2 +1,2 @@
-cargo bootimage --release
-qemu-system-x86_64 -drive format=raw,file=target/x86_64-options/release/bootimage-daos.bin
+nasm -f bin -o boot.bin boot.asm
+qemu-system-x86_64 -drive format=raw,file=boot.bin
