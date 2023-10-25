@@ -67,7 +67,18 @@ start_protected_mode:
 diskNum: db 0
 diskAddr: dw 0x7e00
 
+printDrive:
+	mov al, [bx]
+	cmp al, 0
+	je $
+	mov [ecx], ax
+	inc bx
+	add ecx, 2
+	jmp printDrive
+
 exit:
 	jmp $
 	times 510-($-$$) db 0
 	dw 0xaa55
+
+db "Let's All Love Lain"
