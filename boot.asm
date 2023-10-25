@@ -64,9 +64,6 @@ start_protected_mode:
 	mov bx, diskAddr
 	mov ecx, 0xb8000
 
-diskNum: db 0
-diskAddr: dw 0x7e00
-
 printDrive:
 	mov al, [bx]
 	cmp al, 0
@@ -75,6 +72,9 @@ printDrive:
 	inc bx
 	add ecx, 2
 	jmp printDrive
+
+diskNum: db 0
+diskAddr: dw 0x7e00
 
 exit:
 	jmp $
