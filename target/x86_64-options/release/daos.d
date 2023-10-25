@@ -1,0 +1,1 @@
+/home/dudebro/Documents/coding/Main\ Projects/daos/target/x86_64-options/release/daos: /home/dudebro/Documents/coding/Main\ Projects/daos/src/main.rs /home/dudebro/Documents/coding/Main\ Projects/daos/src/screen.rs
