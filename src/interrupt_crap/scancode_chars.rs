@@ -1,7 +1,6 @@
 use crate::print;
-
+const OUTPUT_UNKNOWN: bool = false;
 pub fn get_char(scancode: u8) -> Option<char> {
-    let output_unknown = false;
     match scancode {
         0x02 => Some('1'),
         0x03 => Some('2'),
@@ -14,8 +13,8 @@ pub fn get_char(scancode: u8) -> Option<char> {
         0x0a => Some('9'),
         0x0b => Some('0'),
         0x0c => Some('-'),
-        0x0e => None,
         0x0d => Some('='),
+        0x0e => Some(0x08.into()),
         0x0f => Some('\t'),
         0x10 => Some('q'),
         0x11 => Some('w'),
@@ -57,7 +56,7 @@ pub fn get_char(scancode: u8) -> Option<char> {
         0x35 => Some('/'),
         0x39 => Some(' '),
         _ => {
-            if output_unknown {
+            if OUTPUT_UNKNOWN {
                 print!("{}", scancode);
             }
             None

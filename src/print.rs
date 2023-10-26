@@ -12,21 +12,24 @@ pub struct Screen {
 }
 impl Screen {
     pub fn print(&mut self, string: &str) {
-        for &byte in string.as_bytes() {
-            match byte {
-                b'\n' => unsafe { self.newline() },
-                b'\t' => self.print("    "),
-                _ => unsafe { self.print_byte(byte) },
+        for &ascii in string.as_bytes() {
+            match ascii {
+                0x08 => self.backspace(),
+                0x09 => self.print("    "),
+                0x0a => self.newline(),
+                _ => self.print_byte(ascii),
             }
         }
     }
-    unsafe fn print_byte(&mut self, byte: u8) {
-        let screen_char = (*self.buffer)
-            .chars
-            .get_mut(self.row)
-            .unwrap()
-            .get_mut(self.column)
-            .unwrap();
+    fn print_byte(&mut self, byte: u8) {
+        let screen_char = unsafe {
+            (*self.buffer)
+                .chars
+                .get_mut(self.row)
+                .unwrap()
+                .get_mut(self.column)
+                .unwrap()
+        };
         screen_char.0 = byte;
         screen_char.1 = 0xF;
         self.column += 1;
@@ -34,11 +37,34 @@ impl Screen {
             self.newline()
         }
     }
-    unsafe fn newline(&mut self) {
+    fn newline(&mut self) {
         self.column = 0;
         self.row += 1;
         if self.row >= 25 {
             self.row = 0;
+        }
+    }
+    fn backspace(&mut self) {
+        if self.row != 0 {
+            if self.column != 0 {
+                self.column -= 1;
+            } else {
+                self.row -= 1;
+                self.column = 79;
+            }
+        } else {
+            if self.column != 0 {
+                self.column -= 1;
+            }
+        }
+        unsafe {
+            (*self.buffer)
+                .chars
+                .get_mut(self.row)
+                .unwrap()
+                .get_mut(self.column)
+                .unwrap()
+                .0 = 0
         }
     }
     const fn new() -> Screen {
