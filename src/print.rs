@@ -41,7 +41,15 @@ impl Screen {
         self.column = 0;
         self.row += 1;
         if self.row >= 25 {
-            self.row = 0;
+            let buffer = unsafe { self.buffer.as_mut().unwrap() };
+            for (i, line) in buffer.chars.into_iter().enumerate() {
+                if i == 0 {
+                    continue;
+                }
+                buffer.chars[i - 1] = line;
+            }
+            buffer.chars[24] = [(0, 0xF); 80];
+            self.row -= 1;
         }
     }
     fn backspace(&mut self) {
@@ -57,15 +65,14 @@ impl Screen {
                 self.column -= 1;
             }
         }
-        unsafe {
-            (*self.buffer)
-                .chars
-                .get_mut(self.row)
-                .unwrap()
-                .get_mut(self.column)
-                .unwrap()
-                .0 = 0
-        }
+        let buffer = unsafe { self.buffer.as_mut().unwrap() };
+        buffer
+            .chars
+            .get_mut(self.row)
+            .unwrap()
+            .get_mut(self.column)
+            .unwrap()
+            .0 = 0
     }
     const fn new() -> Screen {
         Screen {

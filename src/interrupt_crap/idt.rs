@@ -9,7 +9,6 @@ use crate::print;
 use super::gdt::init_gdt;
 use super::gdt::GDT;
 use super::scancode_chars::get_char;
-use super::tss::DOUBLE_FAULT_IST_INDEX;
 
 pub static mut IDT: InterruptDescriptorTable = InterruptDescriptorTable::new();
 pub fn init_idt() {
@@ -23,7 +22,7 @@ pub fn init_idt() {
         IDT[InterruptIndex::Keyboard.as_usize()].set_handler_fn(keyboard_handler);
         IDT.double_fault
             .set_handler_fn(double_fault_handler)
-            .set_stack_index(DOUBLE_FAULT_IST_INDEX);
+            .set_stack_index(0);
         IDT.load();
     }
 }
