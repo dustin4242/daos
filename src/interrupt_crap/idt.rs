@@ -8,7 +8,7 @@ use crate::print;
 
 use super::gdt::init_gdt;
 use super::gdt::GDT;
-use super::scancode_keys::get_char;
+use super::scancode_chars::get_char;
 use super::tss::DOUBLE_FAULT_IST_INDEX;
 
 pub static mut IDT: InterruptDescriptorTable = InterruptDescriptorTable::new();
