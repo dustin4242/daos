@@ -1,12 +1,14 @@
+use x86_64::instructions::port::Port;
 use x86_64::instructions::tables::load_tss;
 use x86_64::registers::segmentation::{Segment, CS};
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 
 use crate::pic::{InterruptIndex, PICS};
-use crate::println;
+use crate::print;
 
 use super::gdt::init_gdt;
 use super::gdt::GDT;
+use super::scancode_keys::get_char;
 use super::tss::DOUBLE_FAULT_IST_INDEX;
 
 pub static mut IDT: InterruptDescriptorTable = InterruptDescriptorTable::new();
@@ -35,7 +37,12 @@ extern "x86-interrupt" fn timer_handler(_stack: InterruptStackFrame) {
     }
 }
 extern "x86-interrupt" fn keyboard_handler(_stack: InterruptStackFrame) {
-    println!("k");
+    let mut port = Port::new(0x60);
+    let scancode: u8 = unsafe { port.read() };
+    let key = get_char(scancode);
+    if let Some(key) = key {
+        print!("{}", key);
+    }
     unsafe {
         PICS.notify_end_of_interrupt(InterruptIndex::Keyboard.as_u8());
     }

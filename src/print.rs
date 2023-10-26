@@ -14,7 +14,8 @@ impl Screen {
     pub fn print(&mut self, string: &str) {
         for &byte in string.as_bytes() {
             match byte {
-                0xA => unsafe { self.newline() },
+                b'\n' => unsafe { self.newline() },
+                b'\t' => self.print("    "),
                 _ => unsafe { self.print_byte(byte) },
             }
         }
