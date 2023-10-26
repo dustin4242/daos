@@ -1,6 +1,7 @@
-//use crate::print;
+use crate::print;
 
 pub fn get_char(scancode: u8) -> Option<char> {
+    let output_unknown = false;
     match scancode {
         0x02 => Some('1'),
         0x03 => Some('2'),
@@ -56,7 +57,9 @@ pub fn get_char(scancode: u8) -> Option<char> {
         0x35 => Some('/'),
         0x39 => Some(' '),
         _ => {
-            //print!("{}", scancode);
+            if output_unknown {
+                print!("{}", scancode);
+            }
             None
         }
     }
