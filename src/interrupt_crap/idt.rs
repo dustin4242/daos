@@ -35,12 +35,15 @@ extern "x86-interrupt" fn timer_handler(_stack: InterruptStackFrame) {
         PICS.notify_end_of_interrupt(InterruptIndex::Timer.as_u8());
     }
 }
+pub static mut READ_KEYS: bool = false;
 extern "x86-interrupt" fn keyboard_handler(_stack: InterruptStackFrame) {
-    let mut port = Port::new(0x60);
-    let scancode: u8 = unsafe { port.read() };
-    let key = get_char(scancode);
-    if let Some(key) = key {
-        print!("{}", key);
+    if unsafe { READ_KEYS } {
+        let mut port = Port::new(0x60);
+        let scancode: u8 = unsafe { port.read() };
+        let key = get_char(scancode);
+        if let Some(key) = key {
+            print!("{}", key);
+        }
     }
     unsafe {
         PICS.notify_end_of_interrupt(InterruptIndex::Keyboard.as_u8());

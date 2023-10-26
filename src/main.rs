@@ -11,9 +11,13 @@ mod print;
 mod pic;
 use pic::init_pics;
 
+use crate::interrupt_crap::idt::READ_KEYS;
+
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     init();
+
+    unsafe { READ_KEYS = true };
 
     println!("Welcome To Dustin's Awesome Operating System!");
     println!("Feel Free To Type Anything You Want!");
