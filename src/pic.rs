@@ -1,3 +1,5 @@
+//PIC stands for Peripheral Interface Controller
+//The more you know
 use pic8259::ChainedPics;
 
 pub const PIC_1_OFFSET: u8 = 32;
