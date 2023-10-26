@@ -15,10 +15,9 @@ use pic::init_pics;
 pub extern "C" fn _start() -> ! {
     init();
 
-    let lain = "Let's All Love Lain";
-    println!("{}", lain);
-    println!("{}", lain);
-    println!("{}", lain);
+    println!("Let's All Love Lain");
+    println!("Welcome To Dustin's Awesome Operating System!");
+    println!("Feel Free To Type Anything You Want!");
 
     hlt_loop()
 }
