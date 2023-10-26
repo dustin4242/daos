@@ -1,26 +1,41 @@
 #![no_std]
 #![no_main]
+#![feature(const_mut_refs)]
 #![feature(abi_x86_interrupt)]
 
 mod interrupt_crap;
 use interrupt_crap::idt::init_idt;
 
 mod print;
-use print::print;
+
+mod pic;
+use pic::init_pics;
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    init_idt();
+    init();
 
-    let lain = b"Let's All Love Lain\n";
-    print(lain);
-    print(lain);
-    print(lain);
+    let lain = "Let's All Love Lain\n";
+    print!("{}", lain);
+    print!("{}", lain);
 
-    loop {}
+    hlt_loop()
 }
 
 #[panic_handler]
-fn panic(_info: &core::panic::PanicInfo) -> ! {
-    loop {}
+fn panic(info: &core::panic::PanicInfo) -> ! {
+    print!("{}", info);
+    hlt_loop()
+}
+
+pub fn hlt_loop() -> ! {
+    loop {
+        x86_64::instructions::hlt();
+    }
+}
+
+fn init() {
+    init_idt();
+    init_pics();
+    x86_64::instructions::interrupts::enable();
 }

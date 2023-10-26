@@ -14,3 +14,4 @@ panic = "abort"
 [dependencies]
 bootloader = "0.9.23"
 x86_64 = "0.14.11"
+pic8259 = "0.10.1"
