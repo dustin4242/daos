@@ -18,6 +18,7 @@ pub extern "C" fn _start() -> ! {
     let lain = "Let's All Love Lain\n";
     print!("{}", lain);
     print!("{}", lain);
+    print!("{}", lain);
 
     hlt_loop()
 }
