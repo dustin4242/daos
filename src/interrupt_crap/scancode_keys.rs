@@ -1,5 +1,3 @@
-use crate::print;
-
 pub fn get_char(scancode: u8) -> Option<char> {
     match scancode {
         0x02 => Some('1'),
