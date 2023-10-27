@@ -13,26 +13,9 @@ pub struct Screen {
     buffer: *mut Buffer,
 }
 impl Screen {
-    pub fn print(&mut self, string: &str) {
+    fn print(&mut self, string: &str) {
         for &ascii in string.as_bytes() {
-            match ascii {
-                0x08 => self.backspace(),
-                0x09 => self.print("    "),
-                0x0a => {
-                    if unsafe { SHELL.command_input } {
-                        self.newline();
-                        unsafe { SHELL.command_input = false };
-                        let buffer = unsafe { (*self.buffer).chars.get(self.row - 1).unwrap() };
-                        self.row -= 1;
-                        unsafe { SHELL.run_command(buffer.get(2..79).unwrap()) }
-                    }
-                    self.newline();
-                    if unsafe { SHELL.command_input } {
-                        print!(">{}", 0u8 as char);
-                    }
-                }
-                _ => self.print_byte(ascii),
-            }
+            self.handle_ascii(ascii);
         }
     }
     fn print_byte(&mut self, byte: u8) {
@@ -112,6 +95,26 @@ impl Screen {
         self.column += 1;
         if self.column >= 80 {
             self.newline()
+        }
+    }
+    fn handle_ascii(&mut self, ascii: u8) {
+        match ascii {
+            0x08 => self.backspace(),
+            0x09 => self.print("    "),
+            0x0a => {
+                if unsafe { SHELL.command_input } {
+                    self.newline();
+                    unsafe { SHELL.command_input = false };
+                    let buffer = unsafe { (*self.buffer).chars.get(self.row - 1).unwrap() };
+                    self.row -= 1;
+                    unsafe { SHELL.run_command(buffer.get(2..79).unwrap()) }
+                }
+                self.newline();
+                if unsafe { SHELL.command_input } {
+                    print!(">{}", 0u8 as char);
+                }
+            }
+            _ => self.print_byte(ascii),
         }
     }
     pub unsafe fn fill_screen(&self) {

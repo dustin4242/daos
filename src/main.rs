@@ -20,8 +20,6 @@ mod shell;
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     init();
-    unsafe { CURSOR.disable_cursor() };
-    unsafe { SCREEN.fill_screen() };
 
     println!("Welcome To Dustin's Awesome Operating System!");
     unsafe { SHELL.initialize_shell() };
@@ -45,4 +43,6 @@ fn init() {
     init_idt();
     init_pics();
     x86_64::instructions::interrupts::enable();
+    unsafe { CURSOR.disable_cursor() };
+    unsafe { SCREEN.fill_screen() };
 }
