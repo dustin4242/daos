@@ -1,27 +1,30 @@
 #![no_std]
 #![no_main]
+#![feature(const_for)]
 #![feature(const_mut_refs)]
 #![feature(abi_x86_interrupt)]
 
 mod interrupt_crap;
 use interrupt_crap::idt::init_idt;
 
+mod cursor;
 mod print;
 
 mod pic;
 use pic::init_pics;
 
-use crate::interrupt_crap::idt::READ_KEYS;
+use crate::{cursor::CURSOR, print::SCREEN, shell::SHELL};
+
+mod shell;
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     init();
-
-    unsafe { READ_KEYS = true };
+    unsafe { CURSOR.disable_cursor() };
+    unsafe { SCREEN.fill_screen() };
 
     println!("Welcome To Dustin's Awesome Operating System!");
-    println!("Feel Free To Type Anything You Want!");
-    println!("Let's All Love Lain");
+    unsafe { SHELL.initialize_shell() };
 
     hlt_loop()
 }

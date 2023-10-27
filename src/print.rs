@@ -1,5 +1,7 @@
 use core::fmt::{Arguments, Write};
 
+use crate::{print, shell::SHELL};
+
 pub static mut SCREEN: Screen = Screen::new();
 
 struct Buffer {
@@ -16,7 +18,21 @@ impl Screen {
             match ascii {
                 0x08 => self.backspace(),
                 0x09 => self.print("    "),
-                0x0a => self.newline(),
+                0x0a => {
+                    unsafe {
+                        if SHELL.command_input {
+                            self.newline();
+                            SHELL.command_input = false;
+                            let buffer = (*self.buffer).chars.get(self.row - 1).unwrap();
+                            self.row -= 1;
+                            SHELL.run_command(buffer.get(2..79).unwrap());
+                        }
+                    }
+                    self.newline();
+                    if unsafe { SHELL.command_input } {
+                        print!(">{}", 0u8 as char);
+                    }
+                }
                 _ => self.print_byte(ascii),
             }
         }
@@ -30,11 +46,16 @@ impl Screen {
                 .get_mut(self.column)
                 .unwrap()
         };
-        screen_char.0 = byte;
-        screen_char.1 = 0xF;
-        self.column += 1;
-        if self.column >= 80 {
-            self.newline()
+        if !unsafe { SHELL.command_input } {
+            screen_char.0 = byte;
+            screen_char.1 = 0xF;
+            self.inc_pos();
+        } else {
+            if self.column != 79 {
+                screen_char.0 = byte;
+                screen_char.1 = 0xF;
+                self.inc_pos();
+            }
         }
     }
     fn newline(&mut self) {
@@ -53,6 +74,29 @@ impl Screen {
         }
     }
     fn backspace(&mut self) {
+        self.dec_pos();
+        let buffer = unsafe { self.buffer.as_mut().unwrap() };
+        if unsafe { SHELL.command_input } {
+            let prev_char = buffer
+                .chars
+                .get_mut(self.row)
+                .unwrap()
+                .get_mut(self.column)
+                .unwrap()
+                .0;
+            if prev_char == 0u8 {
+                self.inc_pos();
+            }
+        }
+        buffer
+            .chars
+            .get_mut(self.row)
+            .unwrap()
+            .get_mut(self.column)
+            .unwrap()
+            .0 = 0;
+    }
+    fn dec_pos(&mut self) {
         if self.row != 0 {
             if self.column != 0 {
                 self.column -= 1;
@@ -65,14 +109,25 @@ impl Screen {
                 self.column -= 1;
             }
         }
-        let buffer = unsafe { self.buffer.as_mut().unwrap() };
-        buffer
-            .chars
-            .get_mut(self.row)
-            .unwrap()
-            .get_mut(self.column)
-            .unwrap()
-            .0 = 0
+    }
+    fn inc_pos(&mut self) {
+        self.column += 1;
+        if self.column >= 80 {
+            self.newline()
+        }
+    }
+    pub unsafe fn fill_screen(&self) {
+        for row in 0..24 {
+            for column in 0..79 {
+                (*self.buffer)
+                    .chars
+                    .get_mut(row)
+                    .unwrap()
+                    .get_mut(column)
+                    .unwrap()
+                    .1 = 0x0F;
+            }
+        }
     }
     const fn new() -> Screen {
         Screen {

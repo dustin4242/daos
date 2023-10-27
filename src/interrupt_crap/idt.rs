@@ -50,5 +50,5 @@ extern "x86-interrupt" fn keyboard_handler(_stack: InterruptStackFrame) {
     }
 }
 extern "x86-interrupt" fn double_fault_handler(stack: InterruptStackFrame, _error_code: u64) -> ! {
-    panic!("EXCEPTION: DOUBLE FAULT\n{:#?}", stack);
+    panic!("Double Fault Exception Occurred:\n{:#?}", stack);
 }
