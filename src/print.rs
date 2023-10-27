@@ -19,14 +19,12 @@ impl Screen {
                 0x08 => self.backspace(),
                 0x09 => self.print("    "),
                 0x0a => {
-                    unsafe {
-                        if SHELL.command_input {
-                            self.newline();
-                            SHELL.command_input = false;
-                            let buffer = (*self.buffer).chars.get(self.row - 1).unwrap();
-                            self.row -= 1;
-                            SHELL.run_command(buffer.get(2..79).unwrap());
-                        }
+                    if unsafe { SHELL.command_input } {
+                        self.newline();
+                        unsafe { SHELL.command_input = false };
+                        let buffer = unsafe { (*self.buffer).chars.get(self.row - 1).unwrap() };
+                        self.row -= 1;
+                        unsafe { SHELL.run_command(buffer.get(2..79).unwrap()) }
                     }
                     self.newline();
                     if unsafe { SHELL.command_input } {
