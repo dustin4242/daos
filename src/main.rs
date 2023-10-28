@@ -7,22 +7,16 @@
 mod interrupt_crap;
 use interrupt_crap::idt::init_idt;
 
-mod cursor;
 mod print;
 
 mod pic;
 use pic::init_pics;
 
-use crate::{cursor::CURSOR, print::SCREEN, shell::SHELL};
-
-mod shell;
-
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     init();
 
-    println!("Welcome To Dustin's Awesome Operating System!");
-    unsafe { SHELL.initialize_shell() };
+    print!("Lain");
 
     hlt_loop()
 }
@@ -43,6 +37,4 @@ fn init() {
     init_idt();
     init_pics();
     x86_64::instructions::interrupts::enable();
-    unsafe { CURSOR.disable_cursor() };
-    unsafe { SCREEN.fill_screen() };
 }

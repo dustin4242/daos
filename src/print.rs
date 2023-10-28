@@ -1,11 +1,11 @@
 use core::fmt::{Arguments, Write};
 
-use crate::{print, shell::SHELL};
-
 pub static mut SCREEN: Screen = Screen::new();
+pub const SCREEN_WIDTH: usize = 320;
+const SCREEN_HEIGHT: usize = 192;
 
 struct Buffer {
-    chars: [[(u8, u8); 80]; 25],
+    chars: [u8; SCREEN_WIDTH * SCREEN_HEIGHT],
 }
 pub struct Screen {
     column: usize,
@@ -19,63 +19,41 @@ impl Screen {
         }
     }
     fn print_byte(&mut self, byte: u8) {
-        let screen_char = unsafe {
-            (*self.buffer)
-                .chars
-                .get_mut(self.row)
-                .unwrap()
-                .get_mut(self.column)
-                .unwrap()
-        };
-        if !unsafe { SHELL.command_input } {
-            screen_char.0 = byte;
-            screen_char.1 = 0xF;
+        let font = psf_rs::Font::load(include_bytes!("./font.psfu"));
+        let buffer = unsafe { self.buffer.as_mut().unwrap() };
+        font.get_char(byte as char, |bit, x, y| {
+            buffer.chars
+                [(self.row * 16 + y as usize) * SCREEN_WIDTH + self.column * 8 + x as usize] =
+                bit * 0x0F;
+        });
+        if self.column != SCREEN_WIDTH - 1 {
             self.inc_pos();
-        } else {
-            if self.column != 79 {
-                screen_char.0 = byte;
-                screen_char.1 = 0xF;
-                self.inc_pos();
-            }
         }
     }
     fn newline(&mut self) {
         self.column = 0;
         self.row += 1;
-        if self.row >= 25 {
+        if self.row >= SCREEN_HEIGHT {
             let buffer = unsafe { self.buffer.as_mut().unwrap() };
-            for (i, line) in buffer.chars.into_iter().enumerate() {
-                if i == 0 {
-                    continue;
+            for i in 0..SCREEN_HEIGHT - 2 {
+                for x in 0..SCREEN_WIDTH - 1 {
+                    buffer.chars[i * SCREEN_WIDTH + x] = buffer.chars[(i + 1) * SCREEN_WIDTH + x];
                 }
-                buffer.chars[i - 1] = line;
             }
-            buffer.chars[24] = [(0, 0xF); 80];
+            for i in 0..SCREEN_WIDTH {
+                buffer.chars[(SCREEN_HEIGHT - 1) * SCREEN_WIDTH + i] = 0x0F;
+            }
             self.row -= 1;
         }
     }
     fn backspace(&mut self) {
-        self.dec_pos();
         let buffer = unsafe { self.buffer.as_mut().unwrap() };
-        if unsafe { SHELL.command_input } {
-            let prev_char = buffer
-                .chars
-                .get_mut(self.row)
-                .unwrap()
-                .get_mut(self.column)
-                .unwrap()
-                .0;
-            if prev_char == 0u8 {
-                self.inc_pos();
+        self.dec_pos();
+        for y in 0..15 {
+            for x in 0..7 {
+                buffer.chars[((self.row * 16 + y) * SCREEN_WIDTH) + (self.column * 8) + x] = 0x00;
             }
         }
-        buffer
-            .chars
-            .get_mut(self.row)
-            .unwrap()
-            .get_mut(self.column)
-            .unwrap()
-            .0 = 0;
     }
     fn dec_pos(&mut self) {
         if self.row != 0 {
@@ -83,7 +61,7 @@ impl Screen {
                 self.column -= 1;
             } else {
                 self.row -= 1;
-                self.column = 79;
+                self.column = (SCREEN_WIDTH / 8) - 1;
             }
         } else {
             if self.column != 0 {
@@ -93,7 +71,7 @@ impl Screen {
     }
     fn inc_pos(&mut self) {
         self.column += 1;
-        if self.column >= 80 {
+        if self.column >= SCREEN_WIDTH / 8 {
             self.newline()
         }
     }
@@ -102,38 +80,16 @@ impl Screen {
             0x08 => self.backspace(),
             0x09 => self.print("    "),
             0x0a => {
-                if unsafe { SHELL.command_input } {
-                    self.newline();
-                    unsafe { SHELL.command_input = false };
-                    let buffer = unsafe { (*self.buffer).chars.get(self.row - 1).unwrap() };
-                    unsafe { SHELL.run_command(buffer.get(2..79).unwrap()) }
-                }
                 self.newline();
-                if unsafe { SHELL.command_input } {
-                    print!(">{}", 0u8 as char);
-                }
             }
             _ => self.print_byte(ascii),
-        }
-    }
-    pub unsafe fn fill_screen(&self) {
-        for row in 0..24 {
-            for column in 0..79 {
-                (*self.buffer)
-                    .chars
-                    .get_mut(row)
-                    .unwrap()
-                    .get_mut(column)
-                    .unwrap()
-                    .1 = 0x0F;
-            }
         }
     }
     const fn new() -> Screen {
         Screen {
             column: 0,
             row: 0,
-            buffer: 0xb8000 as *mut Buffer,
+            buffer: 0xa0000 as *mut Buffer,
         }
     }
 }

@@ -17,7 +17,7 @@ pub fn init_idt() {
         CS::set_reg(GDT.1.as_ref().unwrap().code_selector);
         load_tss(GDT.1.as_ref().unwrap().tss_selector);
 
-        IDT.breakpoint.set_handler_fn(breakpoint_exception);
+        IDT.breakpoint.set_handler_fn(breakpoint_handler);
         IDT[InterruptIndex::Timer.as_usize()].set_handler_fn(timer_handler);
         IDT[InterruptIndex::Keyboard.as_usize()].set_handler_fn(keyboard_handler);
         IDT.double_fault
@@ -27,7 +27,7 @@ pub fn init_idt() {
     }
 }
 
-extern "x86-interrupt" fn breakpoint_exception(stack: InterruptStackFrame) {
+extern "x86-interrupt" fn breakpoint_handler(stack: InterruptStackFrame) {
     panic!("Breakpoint Exception Occured:\n{:#?}", stack);
 }
 extern "x86-interrupt" fn timer_handler(_stack: InterruptStackFrame) {
