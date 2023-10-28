@@ -5,7 +5,7 @@ pub const SCREEN_WIDTH: usize = 320;
 const SCREEN_HEIGHT: usize = 192;
 
 struct Buffer {
-    chars: [u8; SCREEN_WIDTH * SCREEN_HEIGHT],
+    chars: [[u8; SCREEN_WIDTH]; SCREEN_HEIGHT],
 }
 pub struct Screen {
     column: usize,
@@ -23,8 +23,7 @@ impl Screen {
         let font = psf_rs::Font::load(include_bytes!("./font.psfu"));
         let buffer = unsafe { self.buffer.as_mut().unwrap() };
         font.get_char(byte as char, |bit, x, y| {
-            buffer.chars
-                [(self.row * 16 + y as usize) * SCREEN_WIDTH + self.column * 8 + x as usize] =
+            buffer.chars[self.row * 16 + y as usize][self.column * 8 + x as usize] =
                 bit * self.color;
         });
         self.inc_pos();
@@ -44,7 +43,7 @@ impl Screen {
             }
             for y in 0..15 {
                 for x in 0..SCREEN_WIDTH {
-                    buffer.chars[(SCREEN_HEIGHT - 16) * SCREEN_WIDTH + y * SCREEN_WIDTH + x] = 0x00;
+                    buffer.chars[(SCREEN_HEIGHT - 16) + y][x] = 0x00;
                 }
             }
             self.row -= 1;
@@ -55,7 +54,7 @@ impl Screen {
         self.dec_pos();
         for y in 0..15 {
             for x in 0..7 {
-                buffer.chars[((self.row * 16 + y) * SCREEN_WIDTH) + (self.column * 8) + x] = 0x00;
+                buffer.chars[self.row * 16 + y][(self.column * 8) + x] = 0x00;
             }
         }
     }
@@ -93,7 +92,7 @@ impl Screen {
         let buffer = unsafe { self.buffer.as_mut().unwrap() };
         for y in 0..SCREEN_HEIGHT - 1 {
             for x in 0..SCREEN_WIDTH - 1 {
-                buffer.chars[y * SCREEN_WIDTH + x] = 0x00;
+                buffer.chars[y][x] = 0x00;
             }
         }
     }

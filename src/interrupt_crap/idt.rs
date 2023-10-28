@@ -1,6 +1,6 @@
 use x86_64::instructions::port::Port;
 use x86_64::instructions::tables::load_tss;
-use x86_64::registers::segmentation::{Segment, CS};
+use x86_64::registers::segmentation::{Segment, CS as CodeSegment};
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 
 use crate::pic::{InterruptIndex, PICS};
@@ -8,14 +8,14 @@ use crate::print;
 
 use super::gdt::init_gdt;
 use super::gdt::GDT;
-use super::scancode_chars::get_char;
+use super::scancodes;
 
 pub static mut IDT: InterruptDescriptorTable = InterruptDescriptorTable::new();
 pub fn init_idt() {
     unsafe {
         init_gdt();
-        CS::set_reg(GDT.1.as_ref().unwrap().code_selector);
         load_tss(GDT.1.as_ref().unwrap().tss_selector);
+        CodeSegment::set_reg(GDT.1.as_ref().unwrap().code_selector);
 
         IDT.breakpoint.set_handler_fn(breakpoint_handler);
         IDT[InterruptIndex::Timer.as_usize()].set_handler_fn(timer_handler);
@@ -40,7 +40,7 @@ extern "x86-interrupt" fn keyboard_handler(_stack: InterruptStackFrame) {
     if unsafe { READ_KEYS } {
         let mut port = Port::new(0x60);
         let scancode: u8 = unsafe { port.read() };
-        let key = get_char(scancode);
+        let key = scancodes::get_char(scancode);
         if let Some(key) = key {
             print!("{}", key);
         }
