@@ -12,17 +12,34 @@ mod print;
 mod pic;
 use pic::init_pics;
 
+use crate::print::SCREEN;
+
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     init();
 
-    print!("Lain");
+    println!("Let's All Love Lain");
+    println!("Let's All Love Lain aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    println!("Let's All Love Lain");
+    println!("Let's All Love Lain");
+    println!("Let's All Love Lain");
+    println!("Let's All Love Lain");
+    println!("Let's All Love Lain");
+    println!("Let's All Love Lain");
+    println!("Let's All Love Lain");
+    println!("Let's All Love Lain");
+    println!("Let's All Love Lain");
+    println!("Let's All Love Lain");
 
     hlt_loop()
 }
 
 #[panic_handler]
 fn panic(info: &core::panic::PanicInfo) -> ! {
+    unsafe {
+        SCREEN.row = 0;
+        SCREEN.fill_screen();
+    };
     print!("{}", info);
     hlt_loop()
 }

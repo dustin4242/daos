@@ -9,8 +9,9 @@ struct Buffer {
 }
 pub struct Screen {
     column: usize,
-    row: usize,
+    pub row: usize,
     buffer: *mut Buffer,
+    color: u8,
 }
 impl Screen {
     fn print(&mut self, string: &str) {
@@ -24,7 +25,7 @@ impl Screen {
         font.get_char(byte as char, |bit, x, y| {
             buffer.chars
                 [(self.row * 16 + y as usize) * SCREEN_WIDTH + self.column * 8 + x as usize] =
-                bit * 0x0F;
+                bit * self.color;
         });
         if self.column != SCREEN_WIDTH - 1 {
             self.inc_pos();
@@ -35,13 +36,13 @@ impl Screen {
         self.row += 1;
         if self.row >= SCREEN_HEIGHT {
             let buffer = unsafe { self.buffer.as_mut().unwrap() };
-            for i in 0..SCREEN_HEIGHT - 2 {
+            for y in 0..SCREEN_HEIGHT - 2 {
                 for x in 0..SCREEN_WIDTH - 1 {
-                    buffer.chars[i * SCREEN_WIDTH + x] = buffer.chars[(i + 1) * SCREEN_WIDTH + x];
+                    buffer.chars[y * SCREEN_WIDTH + x] = buffer.chars[(y + 1) * SCREEN_WIDTH + x];
                 }
             }
             for i in 0..SCREEN_WIDTH {
-                buffer.chars[(SCREEN_HEIGHT - 1) * SCREEN_WIDTH + i] = 0x0F;
+                buffer.chars[(SCREEN_HEIGHT - 1) * SCREEN_WIDTH + i] = self.color;
             }
             self.row -= 1;
         }
@@ -85,11 +86,20 @@ impl Screen {
             _ => self.print_byte(ascii),
         }
     }
+    pub fn fill_screen(&mut self) {
+        let buffer = unsafe { self.buffer.as_mut().unwrap() };
+        for y in 0..SCREEN_HEIGHT - 1 {
+            for x in 0..SCREEN_WIDTH - 1 {
+                buffer.chars[y * SCREEN_WIDTH + x] = 0x00;
+            }
+        }
+    }
     const fn new() -> Screen {
         Screen {
             column: 0,
             row: 0,
             buffer: 0xa0000 as *mut Buffer,
+            color: 0b00001111,
         }
     }
 }
