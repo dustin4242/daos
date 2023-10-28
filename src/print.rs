@@ -88,7 +88,7 @@ impl Screen {
             _ => self.print_byte(ascii),
         }
     }
-    pub fn fill_screen(&mut self) {
+    pub fn _fill_screen(&mut self) {
         let buffer = unsafe { self.buffer.as_mut().unwrap() };
         for y in 0..SCREEN_HEIGHT - 1 {
             for x in 0..SCREEN_WIDTH - 1 {
