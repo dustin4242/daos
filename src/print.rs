@@ -27,22 +27,25 @@ impl Screen {
                 [(self.row * 16 + y as usize) * SCREEN_WIDTH + self.column * 8 + x as usize] =
                 bit * self.color;
         });
-        if self.column != SCREEN_WIDTH - 1 {
-            self.inc_pos();
-        }
+        self.inc_pos();
     }
     fn newline(&mut self) {
         self.column = 0;
         self.row += 1;
-        if self.row >= SCREEN_HEIGHT {
+        if self.row >= SCREEN_HEIGHT / 16 {
             let buffer = unsafe { self.buffer.as_mut().unwrap() };
-            for y in 0..SCREEN_HEIGHT - 2 {
-                for x in 0..SCREEN_WIDTH - 1 {
-                    buffer.chars[y * SCREEN_WIDTH + x] = buffer.chars[(y + 1) * SCREEN_WIDTH + x];
+            for y in 0..SCREEN_HEIGHT / 16 - 1 {
+                for y2 in 0..15 {
+                    for x in 0..SCREEN_WIDTH - 1 {
+                        buffer.chars[(y * 16 + y2) * SCREEN_WIDTH + x] =
+                            buffer.chars[((y + 1) * 16 + y2) * SCREEN_WIDTH + x];
+                    }
                 }
             }
-            for i in 0..SCREEN_WIDTH {
-                buffer.chars[(SCREEN_HEIGHT - 1) * SCREEN_WIDTH + i] = self.color;
+            for y in 0..15 {
+                for x in 0..SCREEN_WIDTH {
+                    buffer.chars[(SCREEN_HEIGHT - 16) * SCREEN_WIDTH + y * SCREEN_WIDTH + x] = 0x00;
+                }
             }
             self.row -= 1;
         }

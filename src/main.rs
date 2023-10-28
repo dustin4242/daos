@@ -19,15 +19,6 @@ pub extern "C" fn _start() -> ! {
     init();
 
     println!("Let's All Love Lain");
-    println!("Let's All Love Lain aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-    println!("Let's All Love Lain");
-    println!("Let's All Love Lain");
-    println!("Let's All Love Lain");
-    println!("Let's All Love Lain");
-    println!("Let's All Love Lain");
-    println!("Let's All Love Lain");
-    println!("Let's All Love Lain");
-    println!("Let's All Love Lain");
     println!("Let's All Love Lain");
     println!("Let's All Love Lain");
 
