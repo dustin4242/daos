@@ -19,7 +19,9 @@ impl Shell {
     pub fn run_command(&mut self, command: &[(u8, u8)]) {
         self.command_running = true;
         if command == crate::str_to_command!("lain") {
-            print!("\nLet's All Love Lain.");
+            print!("Let's All Love Lain.");
+        } else {
+            print!("Unknown Command.");
         }
         self.command_input = true;
         self.command_running = false;

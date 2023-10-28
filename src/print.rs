@@ -106,7 +106,6 @@ impl Screen {
                     self.newline();
                     unsafe { SHELL.command_input = false };
                     let buffer = unsafe { (*self.buffer).chars.get(self.row - 1).unwrap() };
-                    self.row -= 1;
                     unsafe { SHELL.run_command(buffer.get(2..79).unwrap()) }
                 }
                 self.newline();
