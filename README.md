@@ -1,6 +1,8 @@
 # daos
 Dustin's Awesome Operating System! (Kinda Sucks Rn But I'll Work On It At Some Point)
 
+## To Run:
+
 Requires: `qemu-system-x86` & `rust`
 
 Because of rust's stupidness we need to do a few things to setup after cloning the repo:
@@ -8,7 +10,7 @@ Because of rust's stupidness we need to do a few things to setup after cloning t
 
 > Install 2 things via cargo: `bootimage` & `llvm-tools-preview`
 
-Then you should be set.
+Then to run we use the `./boot.sh` file.
 
 ## Note:
 You may need a ui frontend for qemu, for instance on my system the aur has a package called `qemu-ui-gtk` for a graphical interface.
