@@ -1,9 +1,9 @@
 # daos
 Dustin's Awesome Operating System! (Kinda Sucks Rn But I'll Work On It At Some Point)
 
-## To Run:
-
 Requires: `qemu-system-x86` & `rust`
+
+## To Run:
 
 Because of rust's stupidness we need to do a few things to setup after cloning the repo:
 > Set toolchain to nightly via `rustup override set nightly`
