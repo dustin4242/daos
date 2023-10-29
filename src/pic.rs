@@ -2,17 +2,17 @@
 //The more you know
 use pic8259::ChainedPics;
 
-pub const PIC_1_OFFSET: u8 = 32;
-pub const PIC_2_OFFSET: u8 = PIC_1_OFFSET + 8;
+pub const PIC_1: u8 = 32;
+pub const PIC_2: u8 = PIC_1 + 8;
 
-pub static mut PICS: ChainedPics = unsafe { ChainedPics::new(PIC_1_OFFSET, PIC_2_OFFSET) };
+pub static mut PICS: ChainedPics = unsafe { ChainedPics::new(PIC_1, PIC_2) };
 
 pub fn init_pics() {
     unsafe { PICS.initialize() };
 }
 
 pub enum InterruptIndex {
-    Timer = PIC_1_OFFSET as isize,
+    Timer = PIC_1 as isize,
     Keyboard,
 }
 impl InterruptIndex {

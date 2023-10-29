@@ -16,9 +16,8 @@ use pic::init_pics;
 pub extern "C" fn _start() -> ! {
     init();
 
-    println!("Let's All Love Lain");
-    println!("Let's All Love Lain");
-    println!("Let's All Love Lain");
+    println!("Welcome To Dustin's Awesome Operating\nSystem!");
+    println!("Talwat Is The Goat For The Font Loader!");
 
     hlt_loop()
 }

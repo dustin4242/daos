@@ -1,5 +1,4 @@
-use x86_64::instructions::port::Port;
-use x86_64::instructions::tables::load_tss;
+use x86_64::instructions::{port::Port, tables::load_tss};
 use x86_64::registers::segmentation::{Segment, CS as CodeSegment};
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 
