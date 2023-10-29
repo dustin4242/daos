@@ -41,7 +41,7 @@ impl Screen {
         if self.row >= SCREEN_HEIGHT / 16 {
             let buffer = unsafe { self.buffer.as_mut().unwrap() };
             for y in 0..SCREEN_HEIGHT / 16 - 1 {
-                //self.chars[y] = self.chars[y + 1];
+                self.chars[y] = self.chars[y + 1];
                 for y2 in 0..15 {
                     for x in 0..SCREEN_WIDTH - 1 {
                         buffer.chars[y * 16 + y2][x] = buffer.chars[(y + 1) * 16 + y2][x];
@@ -106,10 +106,15 @@ impl Screen {
             0x09 => self.print("    "),
             0x0a => {
                 self.newline();
-                unsafe {
-                    if SHELL.command_input {
-                        SHELL.run_command();
+                if unsafe { SHELL.command_input } {
+                    let command = self.chars[self.row - 1]
+                        .get(2..SCREEN_WIDTH / 8 - 1)
+                        .unwrap();
+                    unsafe {
+                        SHELL.command_input = false;
+                        SHELL.run_command(command);
                     }
+                    crate::print!("> ");
                 }
             }
             _ => self.print_byte(ascii),

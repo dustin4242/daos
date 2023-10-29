@@ -1,8 +1,4 @@
-use crate::{
-    interrupt_crap::idt::READ_KEYS,
-    print, println,
-    screen::{SCREEN, SCREEN_WIDTH},
-};
+use crate::{interrupt_crap::idt::READ_KEYS, print, println, screen::SCREEN_WIDTH};
 
 pub static mut SHELL: Shell = Shell::new();
 
@@ -11,17 +7,18 @@ pub struct Shell {
     pub command_running: bool,
 }
 impl Shell {
-    pub fn run_command(&mut self) {
-        let screen = unsafe { &SCREEN };
-        self.command_input = false;
+    pub fn initialize_shell(&mut self) {
+        print!("> ");
+        self.command_input = true;
+        unsafe { READ_KEYS = true };
+    }
+    pub fn run_command(&mut self, command: &[u8]) {
         self.command_running = true;
-        let command = screen.chars[screen.row - 1]
-            .get(2..SCREEN_WIDTH / 16 - 1)
-            .unwrap();
         if command == crate::str_to_command!("lain") {
             println!("Let's All Love Lain");
+        } else {
+            println!("Unknown Command");
         }
-        print!("> ");
         self.command_running = false;
         self.command_input = true;
     }
@@ -32,16 +29,11 @@ impl Shell {
         }
     }
 }
-pub fn initialize_shell() {
-    unsafe { SHELL.command_input = true };
-    print!("> ");
-    unsafe { READ_KEYS = true };
-}
 
 #[macro_export]
 macro_rules! str_to_command {
     ($x:expr) => {{
-        let mut command = [0; SCREEN_WIDTH / 16 - 3];
+        let mut command = [0; SCREEN_WIDTH / 8 - 3];
         for (i, c) in $x.chars().enumerate() {
             command[i] = c as u8;
         }

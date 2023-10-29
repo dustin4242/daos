@@ -14,11 +14,7 @@ mod shell;
 mod pic;
 use pic::init_pics;
 
-use crate::{
-    interrupt_crap::idt::READ_KEYS,
-    screen::SCREEN,
-    shell::{initialize_shell, SHELL},
-};
+use crate::{interrupt_crap::idt::READ_KEYS, screen::SCREEN, shell::SHELL};
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
@@ -26,7 +22,7 @@ pub extern "C" fn _start() -> ! {
 
     println!("Welcome To Dustin's Awesome Operating\nSystem!");
     println!("Talwat Is The Goat For The Font Loader!");
-    initialize_shell();
+    unsafe { SHELL.initialize_shell() };
 
     hlt_loop()
 }
