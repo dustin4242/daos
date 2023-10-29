@@ -7,7 +7,9 @@
 mod interrupt_crap;
 use interrupt_crap::idt::init_idt;
 
-mod print;
+mod screen;
+
+mod shell;
 
 mod pic;
 use pic::init_pics;
