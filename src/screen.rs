@@ -11,7 +11,7 @@ struct Buffer {
 }
 pub struct Screen {
     pub chars: [[u8; SCREEN_WIDTH / 8]; SCREEN_HEIGHT / 16],
-    column: usize,
+    pub column: usize,
     pub row: usize,
     buffer: *mut Buffer,
     color: u8,
@@ -23,6 +23,9 @@ impl Screen {
         }
     }
     fn print_byte(&mut self, byte: u8) {
+        if unsafe { SHELL.command_input } && self.column == SCREEN_WIDTH / 8 - 1 {
+            return;
+        }
         let font = psf_rs::Font::load(include_bytes!("./font.psfu"));
         let buffer = unsafe { self.buffer.as_mut().unwrap() };
         font.get_char(byte as char, |bit, x, y| {
@@ -56,11 +59,24 @@ impl Screen {
     }
     fn backspace(&mut self) {
         let buffer = unsafe { self.buffer.as_mut().unwrap() };
-        self.dec_pos();
-        self.chars[self.row][self.column] = 0;
-        for y in 0..15 {
-            for x in 0..7 {
-                buffer.chars[self.row * 16 + y][(self.column * 8) + x] = 0x00;
+        let shell = unsafe { &SHELL };
+        if shell.command_input {
+            if self.column != 2 {
+                self.dec_pos();
+                self.chars[self.row][self.column] = 0;
+                for y in 0..15 {
+                    for x in 0..8 {
+                        buffer.chars[self.row * 16 + y][self.column * 8 + x] = 0x00;
+                    }
+                }
+            }
+        } else {
+            self.dec_pos();
+            self.chars[self.row][self.column] = 0;
+            for y in 0..15 {
+                for x in 0..8 {
+                    buffer.chars[self.row * 16 + y][self.column * 8 + x] = 0x00;
+                }
             }
         }
     }
@@ -99,7 +115,7 @@ impl Screen {
             _ => self.print_byte(ascii),
         }
     }
-    pub fn _fill_screen(&mut self) {
+    pub fn fill_screen(&mut self) {
         let buffer = unsafe { self.buffer.as_mut().unwrap() };
         for y in 0..SCREEN_HEIGHT - 1 {
             for x in 0..SCREEN_WIDTH - 1 {

@@ -14,7 +14,11 @@ mod shell;
 mod pic;
 use pic::init_pics;
 
-use crate::{interrupt_crap::idt::READ_KEYS, screen::SCREEN, shell::initialize_shell};
+use crate::{
+    interrupt_crap::idt::READ_KEYS,
+    screen::SCREEN,
+    shell::{initialize_shell, SHELL},
+};
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
@@ -31,7 +35,9 @@ pub extern "C" fn _start() -> ! {
 fn panic(info: &core::panic::PanicInfo) -> ! {
     unsafe {
         READ_KEYS = false;
-        SCREEN._fill_screen();
+        SHELL.command_input = false;
+        SHELL.command_running = false;
+        SCREEN.fill_screen();
         SCREEN.row = 0
     };
     print!("{}", info);
