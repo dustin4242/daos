@@ -112,7 +112,7 @@ impl Screen {
                         .unwrap();
                     unsafe {
                         SHELL.command_input = false;
-                        SHELL.run_command(command);
+                        SHELL.run_command(command.try_into().unwrap());
                     }
                     crate::print!("> ");
                 }

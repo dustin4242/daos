@@ -12,10 +12,12 @@ impl Shell {
         self.command_input = true;
         unsafe { READ_KEYS = true };
     }
-    pub fn run_command(&mut self, command: &[u8]) {
+    pub fn run_command(&mut self, command: [u8; SCREEN_WIDTH / 8 - 3]) {
         self.command_running = true;
         if command == crate::str_to_command!("lain") {
             println!("Let's All Love Lain");
+        } else if command == crate::str_to_command!("cat") {
+            println!(":3");
         } else {
             println!("Unknown Command");
         }
