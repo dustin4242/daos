@@ -14,18 +14,26 @@ mod shell;
 mod pic;
 use pic::init_pics;
 
+use crate::{interrupt_crap::idt::READ_KEYS, screen::SCREEN, shell::initialize_shell};
+
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     init();
 
     println!("Welcome To Dustin's Awesome Operating\nSystem!");
     println!("Talwat Is The Goat For The Font Loader!");
+    initialize_shell();
 
     hlt_loop()
 }
 
 #[panic_handler]
 fn panic(info: &core::panic::PanicInfo) -> ! {
+    unsafe {
+        READ_KEYS = false;
+        SCREEN._fill_screen();
+        SCREEN.row = 0
+    };
     print!("{}", info);
     hlt_loop()
 }
