@@ -1,4 +1,9 @@
-use crate::{interrupt_crap::idt::READ_KEYS, print, println, screen::SCREEN_WIDTH};
+use crate::{
+    graphics,
+    interrupt_crap::idt::READ_KEYS,
+    print, println,
+    screen::{SCREEN, SCREEN_WIDTH},
+};
 
 pub static mut SHELL: Shell = Shell::new();
 
@@ -17,6 +22,8 @@ impl Shell {
         if command == crate::str_to_command!("lain") {
             println!("Let's All Love Lain");
         } else if command == crate::str_to_command!("cat") {
+            let graphic = graphics::cat_graphic();
+            unsafe { SCREEN.print_graphic(graphic) };
             println!(":3");
         } else {
             println!("Unknown Command");

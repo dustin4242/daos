@@ -35,6 +35,15 @@ impl Screen {
         self.chars[self.row][self.column] = byte;
         self.inc_pos();
     }
+    pub fn print_graphic(&mut self, bytes: [[u8; 8]; 16]) {
+        let buffer = unsafe { self.buffer.as_mut().unwrap() };
+        for y in 0..16 {
+            for x in 0..8 {
+                buffer.chars[self.row * 16 + y][self.column * 8 + x] = bytes[y][x] * self.color;
+            }
+        }
+        self.inc_pos();
+    }
     fn newline(&mut self) {
         self.column = 0;
         self.row += 1;
