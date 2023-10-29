@@ -50,9 +50,9 @@ dependencies = [
 
 [[package]]
 name = "psf-rs"
-version = "1.0.0"
+version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5544094c25b049f67c1f4f32194c519b019bdf85ed8f4daeee957662c23a88e1"
+checksum = "42e01ae73538d50385455b1e7b60636fdbefc630a4e1191f9d58a8aa3571faa6"
 
 [[package]]
 name = "rustversion"
