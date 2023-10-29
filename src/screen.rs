@@ -51,8 +51,8 @@ impl Screen {
             let buffer = unsafe { self.buffer.as_mut().unwrap() };
             for y in 0..SCREEN_HEIGHT / 16 - 1 {
                 self.chars[y] = self.chars[y + 1];
-                for y2 in 0..15 {
-                    for x in 0..SCREEN_WIDTH - 1 {
+                for y2 in 0..16 {
+                    for x in 0..SCREEN_WIDTH {
                         buffer.chars[y * 16 + y2][x] = buffer.chars[(y + 1) * 16 + y2][x];
                     }
                 }
@@ -168,4 +168,10 @@ macro_rules! println {
 #[macro_export]
 macro_rules! print {
     ($($arg:tt)*) => (crate::screen::_print(format_args!($($arg)*)));
+}
+#[macro_export]
+macro_rules! print_graphic {
+    ($arg:expr) => {
+        unsafe { crate::screen::SCREEN.print_graphic($arg) }
+    };
 }
