@@ -28,9 +28,18 @@ name = "daos"
 version = "0.1.0"
 dependencies = [
  "bootloader",
+ "daos-lib",
  "pic8259",
  "psf-rs",
  "x86_64",
+]
+
+[[package]]
+name = "daos-lib"
+version = "0.1.0"
+source = "git+https://github.com/dustin4242/daos-lib.git#876d25eec0197d87f6951b5f2e7b69258296cc02"
+dependencies = [
+ "psf-rs",
 ]
 
 [[package]]

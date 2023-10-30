@@ -7,14 +7,13 @@
 mod interrupt_crap;
 use interrupt_crap::idt::init_idt;
 
-mod graphics;
-mod screen;
-mod shell;
+use daos_lib::print;
+use daos_lib::println;
+use daos_lib::screen::{self, SCREEN};
+use daos_lib::shell::SHELL;
 
 mod pic;
 use pic::init_pics;
-
-use crate::{interrupt_crap::idt::READ_KEYS, screen::SCREEN, shell::SHELL};
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
@@ -30,7 +29,7 @@ pub extern "C" fn _start() -> ! {
 #[panic_handler]
 fn panic(info: &core::panic::PanicInfo) -> ! {
     unsafe {
-        READ_KEYS = false;
+        SHELL.read_keys = false;
         SHELL.command_input = false;
         SHELL.command_running = false;
         SCREEN.fill_screen();
