@@ -1,7 +1,5 @@
 #![no_std]
 #![no_main]
-#![feature(const_for)]
-#![feature(const_mut_refs)]
 #![feature(abi_x86_interrupt)]
 
 mod interrupt_crap;
