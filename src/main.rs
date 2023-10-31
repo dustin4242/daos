@@ -17,6 +17,8 @@ use pic::init_pics;
 pub extern "C" fn _start() -> ! {
     init();
 
+    unsafe { SCREEN.font = Some(psf_rs::Font::load(include_bytes!("./font.psfu"))) };
+
     println!("Welcome To Dustin's Awesome Operating\nSystem!");
     println!("Talwat Is The Goat For The Font Loader!");
     unsafe { SHELL.initialize_shell() };
