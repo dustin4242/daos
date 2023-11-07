@@ -12,12 +12,22 @@ use daos_lib::shell::SHELL;
 
 mod pic;
 use pic::init_pics;
+use x86_64::instructions::port::Port;
+use x86_64::instructions::port::PortGeneric;
+use x86_64::instructions::port::ReadWriteAccess;
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     init();
 
     unsafe { SCREEN.font = Some(psf_rs::Font::load(include_bytes!("./font.psfu"))) };
+
+    let mut misc1: PortGeneric<u8, ReadWriteAccess> = Port::new(0x3C4);
+    let mut misc2: PortGeneric<u8, ReadWriteAccess> = Port::new(0x3C5);
+
+    unsafe {
+        println!("{}", misc2.read());
+    };
 
     println!("Welcome To Dustin's Awesome Operating\nSystem!");
     println!("Talwat Is The Goat For The Font Loader!");
@@ -32,7 +42,7 @@ fn panic(info: &core::panic::PanicInfo) -> ! {
         SHELL.read_keys = false;
         SHELL.command_input = false;
         SHELL.command_running = false;
-        SCREEN.fill_screen();
+        SCREEN.clear_screen();
         SCREEN.row = 0
     };
     print!("{}", info);
