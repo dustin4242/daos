@@ -8,7 +8,7 @@ use interrupt_crap::idt::init_idt;
 use daos_lib::print;
 use daos_lib::println;
 use daos_lib::screen::{self, SCREEN};
-use daos_lib::shell::SHELL;
+use daos_lib::shell::{self, SHELL};
 
 mod pic;
 use pic::init_pics;
@@ -17,11 +17,11 @@ use pic::init_pics;
 pub extern "C" fn _start() -> ! {
     init();
 
-    unsafe { SCREEN.font = Some(psf_rs::Font::load(include_bytes!("./font.psfu"))) };
+    screen::load_font(include_bytes!("./font.psfu"));
 
     println!("Welcome To Dustin's Awesome Operating\nSystem!");
     println!("Talwat Is The Goat For The Font Loader!");
-    unsafe { SHELL.initialize_shell() };
+    shell::initialize_shell();
 
     hlt_loop()
 }
@@ -32,7 +32,7 @@ fn panic(info: &core::panic::PanicInfo) -> ! {
         SHELL.read_keys = false;
         SHELL.command_input = false;
         SHELL.command_running = false;
-        SCREEN.fill_screen();
+        SCREEN.clear_screen();
         SCREEN.row = 0
     };
     print!("{}", info);

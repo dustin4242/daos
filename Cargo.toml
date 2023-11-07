@@ -13,7 +13,11 @@ panic = "abort"
 
 [dependencies]
 daos-lib = { git = "https://github.com/dustin4242/daos-lib" }
+#daos-lib = { path = "../daos-lib" }
 psf-rs = "2.0.2"
-bootloader = { version = "0.9.23", features = ["vga_320x200"] }
+bootloader = { git = "https://github.com/dustin4242/daos-bootloader", features = [
+  "vga_320x200",
+] }
+#bootloader = { path = "../daos-bootloader", features = ["vga_320x200"] }
 x86_64 = "0.14.11"
 pic8259 = "0.10.1"
