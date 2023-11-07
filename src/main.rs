@@ -8,30 +8,20 @@ use interrupt_crap::idt::init_idt;
 use daos_lib::print;
 use daos_lib::println;
 use daos_lib::screen::{self, SCREEN};
-use daos_lib::shell::SHELL;
+use daos_lib::shell::{self, SHELL};
 
 mod pic;
 use pic::init_pics;
-use x86_64::instructions::port::Port;
-use x86_64::instructions::port::PortGeneric;
-use x86_64::instructions::port::ReadWriteAccess;
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     init();
 
-    unsafe { SCREEN.font = Some(psf_rs::Font::load(include_bytes!("./font.psfu"))) };
-
-    let mut misc1: PortGeneric<u8, ReadWriteAccess> = Port::new(0x3C4);
-    let mut misc2: PortGeneric<u8, ReadWriteAccess> = Port::new(0x3C5);
-
-    unsafe {
-        println!("{}", misc2.read());
-    };
+    screen::load_font(include_bytes!("./font.psfu"));
 
     println!("Welcome To Dustin's Awesome Operating\nSystem!");
     println!("Talwat Is The Goat For The Font Loader!");
-    unsafe { SHELL.initialize_shell() };
+    shell::initialize_shell();
 
     hlt_loop()
 }
