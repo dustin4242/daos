@@ -9,6 +9,7 @@ Requires: `qemu-system-x86` & `rust`
 > Set toolchain to nightly via `rustup override set nightly`
 
 > Install 2 things via cargo: `bootimage` & `llvm-tools-preview`
+> *You can install llvm-tools via `rustup component add llvm-tools-preview`*
 
 2. By default I have the `daos-lib` set to the github repository in the `Cargo.toml`, however if this changes to `"../daos-lib"` all that means is that you need to clone the repository to the same folder that `daos` is in.
 
