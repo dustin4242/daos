@@ -13,7 +13,10 @@ pub fn init_gdt() {
     init_tss();
     unsafe {
         let code_selector = GDT.0.add_entry(Descriptor::kernel_code_segment());
+
+        #[allow(static_mut_ref)]
         let tss_selector = GDT.0.add_entry(Descriptor::tss_segment(&TSS));
+
         GDT.1 = Some(Selectors {
             code_selector,
             tss_selector,

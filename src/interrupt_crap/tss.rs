@@ -7,6 +7,7 @@ pub fn init_tss() {
             const STACK_SIZE: usize = 1024 * 20;
             static mut STACK: [u8; STACK_SIZE] = [0; STACK_SIZE];
 
+            #[allow(static_mut_ref)]
             let stack_start = Address::from_ptr(&STACK);
             let stack_end = stack_start + STACK_SIZE;
             stack_end
